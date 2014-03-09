@@ -18,34 +18,34 @@ import co.com.carp.ies.utils.AppPropertiesReader;
 
 public class CommonOperations {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommonOperations.class);
+    private static final Logger SYSTEM_LOGGER = LoggerFactory.getLogger("system");
 
     public void read(final String fileName) throws IOException {
-        logger.debug("File that will be processed is {}", fileName);
-        logger.info("Reading {} file", fileName);
+        SYSTEM_LOGGER.debug("File that will be processed is {}", fileName);
+        SYSTEM_LOGGER.info("Reading {} file", fileName);
 
         Charset charset = Charset.forName("UTF-8");
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(fileName), charset)) {
             String line = null;
             while ((line = reader.readLine()) != null) {
-                logger.info("{} => line from document", line);
+                SYSTEM_LOGGER.info("{} => line from document", line);
             }
         } catch (IOException ex) {
-            logger.error("Error: {}", ex);
+            SYSTEM_LOGGER.error("Error: {}", ex);
         }
     }
 
     public void delete(final String fileName) {
-        logger.debug("File that will be processed is {}", fileName);
-        logger.info("Deleting {} file", fileName);
+        SYSTEM_LOGGER.debug("File that will be processed is {}", fileName);
+        SYSTEM_LOGGER.info("Deleting {} file", fileName);
         try {
             Files.delete(Paths.get(fileName));
         } catch (NoSuchFileException ex) {
-            logger.error("No such file or directory {}", fileName);
+            SYSTEM_LOGGER.error("No such file or directory {}", fileName);
         } catch (DirectoryNotEmptyException ex) {
-            logger.error("Not empty {}", fileName);
+            SYSTEM_LOGGER.error("Not empty {}", fileName);
         } catch (IOException ex) {
-            logger.error("Error: {}", ex.toString());
+            SYSTEM_LOGGER.error("Error: {}", ex.toString());
         }
     }
 
@@ -60,7 +60,7 @@ public class CommonOperations {
             String fileName = source.substring(source.lastIndexOf(File.separator));
             Files.move(Paths.get(source), Paths.get(target + File.separator + fileName), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            logger.error("Error: {}", ex.toString());
+            SYSTEM_LOGGER.error("Error: {}", ex.toString());
         }
     }
 }

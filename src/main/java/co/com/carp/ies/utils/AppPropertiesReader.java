@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class AppPropertiesReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppPropertiesReader.class);
+    private static final Logger SYSTEM_LOGGER = LoggerFactory.getLogger("system");
 
     private static final String WATCHER_FOLDER = "watcher.folder";
     
@@ -27,7 +27,7 @@ public class AppPropertiesReader {
         try {
             appProperties.load(AppPropertiesReader.class.getResourceAsStream(PROPERTY_FILE));
         } catch (IOException e) {
-            logger.error("Error: {}", e.toString());
+            SYSTEM_LOGGER.error("Error: {}", e.toString());
         }
     }
 
@@ -40,7 +40,7 @@ public class AppPropertiesReader {
 
     public String getWatcherFolder() {
         if (!appProperties.containsKey(WATCHER_FOLDER)) {
-            logger.error("Please provide a value for parameter {} in application.properties file", WATCHER_FOLDER);
+            SYSTEM_LOGGER.error("Please provide a value for parameter {} in application.properties file", WATCHER_FOLDER);
             throw new InvalidParameterException("Please provide a value for parameter " + WATCHER_FOLDER + " in application.properties file.");
         }
         return appProperties.getProperty(WATCHER_FOLDER);
@@ -48,7 +48,7 @@ public class AppPropertiesReader {
     
     public String getProcessedFolder() {
         if (!appProperties.containsKey(PROCESSED_FOLDER)) {
-            logger.error("Please provide a value for parameter {} in application.properties file", PROCESSED_FOLDER);
+            SYSTEM_LOGGER.error("Please provide a value for parameter {} in application.properties file", PROCESSED_FOLDER);
             throw new InvalidParameterException("Please provide a value for parameter " + PROCESSED_FOLDER + " in application.properties file.");
         }
         return appProperties.getProperty(PROCESSED_FOLDER);

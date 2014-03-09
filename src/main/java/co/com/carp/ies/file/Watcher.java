@@ -16,13 +16,13 @@ import co.com.carp.ies.utils.AppPropertiesReader;
 
 public class Watcher extends Thread {
 
-    private static final Logger logger = LoggerFactory.getLogger(Watcher.class);
+    private static final Logger SYSTEM_LOGGER = LoggerFactory.getLogger("system");
 
     @Override
     public void run() {
         CommonOperations fileOperations = new CommonOperations();
         Path directory = Paths.get(AppPropertiesReader.getInstance().getWatcherFolder());
-        logger.info("Now watching the directory {}", directory.toAbsolutePath());
+        SYSTEM_LOGGER.info("Now watching the directory {}", directory.toAbsolutePath());
 
         try {
             WatchService watcher = directory.getFileSystem().newWatchService();
@@ -36,7 +36,7 @@ public class Watcher extends Thread {
                 for (WatchEvent<?> event : events) {
                     try {
                         
-                        logger.info("Someone just created the file {}", event.context().toString());
+                        SYSTEM_LOGGER.info("Someone just created the file {}", event.context().toString());
                         Thread.sleep(1000 * 60);
                         
                         String fileName = directory.toAbsolutePath() + File.separator + event.context().toString();
@@ -45,13 +45,13 @@ public class Watcher extends Thread {
                         
                         
                     } catch (Exception e) {
-                        logger.error("Error: {}", e.toString());
+                        SYSTEM_LOGGER.error("Error: {}", e.toString());
                     }
                 }
             }
 
         } catch (Exception e) {
-            logger.error("Error: {}", e.toString());
+            SYSTEM_LOGGER.error("Error: {}", e.toString());
         }
     }
 }
