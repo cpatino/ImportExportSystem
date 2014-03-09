@@ -1,6 +1,7 @@
 *.class
 
 # Package Files #
-bin
+/bin
 *.war
 *.ear
+/target
