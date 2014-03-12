@@ -51,6 +51,11 @@ public class AppPropertiesReader implements Serializable {
      * Folder that contains imported files that were processed. 
      */
     private static final String PROCESSED_FOLDER = "processed.folder";
+    
+    /**
+     * Folder that contains imported files that could not be processed. 
+     */
+    private static final String NOT_PROCESSED_FOLDER = "not-processed.folder";
 
     /**
      * Constructor
@@ -102,5 +107,18 @@ public class AppPropertiesReader implements Serializable {
             throw new InvalidParameterException("Please provide a value for parameter " + PROCESSED_FOLDER + " in application.properties file.");
         }
         return appProperties.getProperty(PROCESSED_FOLDER);
+    }
+    
+    /**
+     * Gets property value for key defined in NOT_PROCESSED_FOLDER.
+     * 
+     * @return {@link String} value for NOT_PROCESSED_FOLDER defined in application.property file.
+     */
+    public String getNotProcessedFolder() {
+        if (!appProperties.containsKey(NOT_PROCESSED_FOLDER)) {
+            SYSTEM_LOGGER.error("Please provide a value for parameter {} in application.properties file", NOT_PROCESSED_FOLDER);
+            throw new InvalidParameterException("Please provide a value for parameter " + NOT_PROCESSED_FOLDER + " in application.properties file.");
+        }
+        return appProperties.getProperty(NOT_PROCESSED_FOLDER);
     }
 }

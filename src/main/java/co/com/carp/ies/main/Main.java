@@ -31,9 +31,8 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            Thread thread = new Watcher();
-            thread.setName(Watcher.class.getName());       
-            thread.start();
+            Watcher watcher = new Watcher();
+            watcher.watch();
         } catch (Exception ex) {
             SYSTEM_LOGGER.error("Ups!, an exception was throwed: {}", ex.toString());
             EXCEPTION_LOGGER.error(ex.toString());

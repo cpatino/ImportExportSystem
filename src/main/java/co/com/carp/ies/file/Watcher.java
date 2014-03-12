@@ -12,6 +12,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import co.com.carp.ies.distribution.rules.Table;
 import co.com.carp.ies.utils.AppPropertiesReader;
 
 /**
@@ -22,30 +23,23 @@ import co.com.carp.ies.utils.AppPropertiesReader;
  * @version 1.0
  * @author Carlos Rodriguez
  */
-public class Watcher extends Thread {
+public class Watcher {
 
     /**
      * Systems logger
      */
-    private static final Logger SYSTEM_LOGGER = LoggerFactory.getLogger("system");
+    protected static final Logger SYSTEM_LOGGER = LoggerFactory.getLogger("system");
     
     /**
      * Exceptions logger
      */
-    private static final Logger EXCEPTION_LOGGER = LoggerFactory.getLogger("exception");
+    protected static final Logger EXCEPTION_LOGGER = LoggerFactory.getLogger("exception");
 
-    @Override
-    public void run() {
-        this.watch();
-    }
-    
     /**
      * Keep watching for import files and notify another objects when a new file appears. 
      */
-    private void watch() {
-        CommonOperations fileOperations = new CommonOperations();
+    public void watch() {
         Path directory = Paths.get(AppPropertiesReader.getInstance().getWatcherFolder());
-        String processedDir = AppPropertiesReader.getInstance().getProcessedFolder();
         SYSTEM_LOGGER.info("Watching the directory {}", directory.toAbsolutePath());
 
         try {
@@ -64,11 +58,8 @@ public class Watcher extends Thread {
                         Thread.sleep(1000 * 60);
                         
                         String fileName = directory.toAbsolutePath() + File.separator + event.context().toString();
-                        List<String> lnsFromFile = fileOperations.read(fileName);
-                        
-                        if (lnsFromFile != null) {
-                            fileOperations.move(fileName, processedDir);
-                        }                        
+                        WatcherThread wThread = new WatcherThread(fileName);
+                        wThread.start();
                         
                     } catch (Exception e) {
                         SYSTEM_LOGGER.error("Error: {}", e.toString());
@@ -81,4 +72,56 @@ public class Watcher extends Thread {
             EXCEPTION_LOGGER.error(ex.toString());
         }
     }
+}
+
+/**
+ * This class is attempt to be a thread that will be created all times when a new file is created. It will help to process imported files.
+ * 
+ * @since 11/03/2014
+ * @version 1.0
+ * @author Carlos Rodriguez
+ */
+class WatcherThread extends Thread {
+	
+	private String filePath;
+	
+	public WatcherThread(final String filePath) {
+		super();
+		this.filePath = filePath;
+	}
+	
+	@Override
+    public void run() {
+		CommonOperations fileOperations = new CommonOperations();
+		String processedDir = AppPropertiesReader.getInstance().getProcessedFolder();
+		String notProcessedDir = AppPropertiesReader.getInstance().getNotProcessedFolder();
+		String tableName = filePath.substring(filePath.lastIndexOf(File.separator) + 1, filePath.lastIndexOf("."));
+		
+		try {
+			Table table = Table.valueOf(tableName);
+			List<String> lnsFromFile = fileOperations.read(filePath);
+        
+			if (lnsFromFile != null) {
+				fileOperations.move(filePath, processedDir);
+			}
+		} catch (CommonOperationsException ex) {
+			
+			Watcher.SYSTEM_LOGGER.error("An error ocurred when the file {} was trying to be processed", filePath);
+			Watcher.EXCEPTION_LOGGER.error(ex.toString());
+			
+		} catch (IllegalArgumentException ex) {
+			
+			Watcher.SYSTEM_LOGGER.error("Table {} is not valid, please fix the imported file name", tableName);
+			Watcher.EXCEPTION_LOGGER.error(ex.toString());
+			
+			try {
+				fileOperations.move(filePath, notProcessedDir);
+			} catch (CommonOperationsException e) {
+				Watcher.SYSTEM_LOGGER.error("An error ocurred when the file {} was trying to be processed", filePath);
+				Watcher.EXCEPTION_LOGGER.error(ex.toString());
+			}
+			
+		}
+    }
+	
 }
