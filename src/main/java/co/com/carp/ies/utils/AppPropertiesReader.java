@@ -56,6 +56,11 @@ public class AppPropertiesReader implements Serializable {
      * Folder that contains imported files that could not be processed. 
      */
     private static final String NOT_PROCESSED_FOLDER = "not-processed.folder";
+    
+    /**
+     * Name of database that is being used
+     */
+    private static final String SELECTED_DATABASE = "selected-database";
 
     /**
      * Constructor
@@ -120,5 +125,18 @@ public class AppPropertiesReader implements Serializable {
             throw new InvalidParameterException("Please provide a value for parameter " + NOT_PROCESSED_FOLDER + " in application.properties file.");
         }
         return appProperties.getProperty(NOT_PROCESSED_FOLDER);
+    }
+    
+    /**
+     * Gets property value for key defined in SELECTED_DATABASE.
+     * 
+     * @return {@link String} value for SELECTED_DATABASE defined in application.property file.
+     */
+    public String getSelectedDatabaseName() {
+        if (!appProperties.containsKey(SELECTED_DATABASE)) {
+            SYSTEM_LOGGER.error("Please provide a value for parameter {} in application.properties file", SELECTED_DATABASE);
+            throw new InvalidParameterException("Please provide a value for parameter " + SELECTED_DATABASE + " in application.properties file.");
+        }
+        return appProperties.getProperty(SELECTED_DATABASE);
     }
 }
